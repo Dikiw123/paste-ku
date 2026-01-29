@@ -1,0 +1,66 @@
+<script>
+const PASSWORD = "admin123"; // ganti kalau perlu
+
+function login() {
+    const input = document.getElementById("password").value;
+    if (input === PASSWORD) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("contentBox").classList.remove("hidden");
+        loadFromURL();
+    } else {
+        alert("Password salah!");
+    }
+}
+
+function generate() {
+    const text = document.getElementById("links").value;
+    renderLinks(text);
+}
+
+function renderLinks(text) {
+    const lines = text.split("\n");
+    let output = "";
+
+    lines.forEach(link => {
+        link = link.trim();
+        if (link !== "") {
+            output += `
+            <div class="link">
+                <a href="${link}" target="_blank">${link}</a>
+            </div>`;
+        }
+    });
+
+    document.getElementById("result").innerHTML = output;
+}
+
+function copyAll() {
+    navigator.clipboard.writeText(document.getElementById("links").value);
+    alert("Semua link berhasil di-copy!");
+}
+
+function shareLink() {
+    const text = document.getElementById("links").value;
+    if (!text.trim()) {
+        alert("Isi link dulu!");
+        return;
+    }
+
+    const encoded = btoa(unescape(encodeURIComponent(text)));
+    const url = `${location.origin}${location.pathname}?data=${encoded}`;
+
+    navigator.clipboard.writeText(url);
+    alert("Link share berhasil di-copy!");
+}
+
+function loadFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const data = params.get("data");
+
+    if (data) {
+        const decoded = decodeURIComponent(escape(atob(data)));
+        document.getElementById("links").value = decoded;
+        renderLinks(decoded);
+    }
+}
+</script>
